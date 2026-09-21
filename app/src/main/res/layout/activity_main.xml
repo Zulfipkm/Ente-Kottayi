@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F0F4F1">
 
-    <!-- Main Container -->
+    <!-- Rain / Atmosphere Effect Overlay Canvas -->
+    <View
+        android:id="@+id/weatherEffectView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <!-- Main Content Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Top Header -->
+        <!-- Dynamic Weather Header -->
         <LinearLayout
+            android:id="@+id/layoutHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#1B5E20"
@@ -23,19 +33,42 @@
             android:paddingEnd="16dp"
             android:paddingBottom="14dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="എന്റെ കോട്ടായി 🌴"
-                android:textColor="#FFFFFF"
-                android:textSize="21sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="എന്റെ കോട്ടായി 🌴"
+                    android:textColor="#FFFFFF"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <!-- Live Kottayi Weather Badge -->
+                <TextView
+                    android:id="@+id/tvWeatherBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#33FFFFFF"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="4dp"
+                    android:text="☀️ കോട്ടായി"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvHeaderSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="3dp"
                 android:text="കോട്ടായി പഞ്ചായത്ത് കൂലിപ്പണി &amp; സർവീസ് നെറ്റ്‌വർക്ക്"
                 android:textColor="#C8E6C9"
                 android:textSize="12sp" />
@@ -257,7 +290,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Traditional Splash Screen with Premium Animation -->
+    <!-- Traditional Splash Screen with Premium Credit Animation -->
     <LinearLayout
         android:id="@+id/splashOverlay"
         android:layout_width="match_parent"
@@ -284,7 +317,6 @@
             android:textSize="28sp"
             android:textStyle="bold" />
 
-        <!-- Developer Credit with animation target -->
         <TextView
             android:id="@+id/tvDeveloperCredit"
             android:layout_width="wrap_content"
@@ -302,7 +334,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="കോട്ടായി പഞ്ചായത്ത് കൂലി &amp; സർവീസ്"
-            android:textColor="#C8E6C9"
+            android:textColor="#E8F5E9"
             android:textSize="12sp" />
     </LinearLayout>
 </FrameLayout>
