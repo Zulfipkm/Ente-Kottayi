@@ -47,19 +47,26 @@ public class MainActivity extends AppCompatActivity {
 
     private View splashOverlay, layoutAuth, layoutMainApp, viewSearch, viewRegister, viewProfile, weatherEffectView, rootContainer;
     private LinearLayout containerWorkersList, layoutHeader;
+    private LinearLayout layoutDriverSpecific, layoutCookSpecific, layoutClimberSpecific, layoutGeneralWage;
     private TextView tvHeaderSubtitle, tvDeveloperCredit, tvWeatherBadge, tvUserEmail;
     private Button btnLogin, btnSignUp, btnLogout, btnDeleteAccount;
     private Button navSearch, navRegister, navProfile, btnSaveProfile;
     private Spinner spinnerFilterJob, spinnerWorkerJob;
     private EditText etAuthEmail, etAuthPassword, etName, etPhone, etArea, etWage, etUpiId;
 
+    // Custom Category Specific Inputs
+    private EditText etVehicleType, etRatePerKm, etMinCharge;
+    private EditText etFoodItems, etRatePerPlate;
+    private EditText etRatePerTree;
+
     public static class WorkerProfile {
         String id, userId, name, phone, job, area, upiId;
         long wage;
+        String extraDetails;
 
         public WorkerProfile() {}
 
-        public WorkerProfile(String id, String userId, String name, String phone, String job, String area, long wage, String upiId) {
+        public WorkerProfile(String id, String userId, String name, String phone, String job, String area, long wage, String upiId, String extraDetails) {
             this.id = id;
             this.userId = userId;
             this.name = name;
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             this.area = area;
             this.wage = wage;
             this.upiId = upiId;
+            this.extraDetails = extraDetails;
         }
     }
 
@@ -76,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private final String[] jobCategories = {
             "എല്ലാ തൊഴിലും (All Works)",
             "🌴 തെങ്ങ് കയറ്റം (Coconut Climber)",
-            "🚗 ഡ്രൈവർ (Car / Auto / Goods / Tractor)",
+            "🚗 ഡ്രൈവർ (Driver - Rate per Km)",
+            "🍳 പാചകം & കാറ്ററിംഗ് (Cook/Food Items)",
             "💡 ഇലക്ട്രീഷ്യൻ (Electrician)",
             "🔧 പ്ലംബർ (Plumber)",
             "🎨 പെയിന്റിംഗ് (Painter)",
@@ -86,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
             "🪓 മരം വെട്ട് / വാഴ വെട്ട് (Tree Cutting)",
             "🌿 പുല്ലുവെട്ട് & തോട്ടപ്പണി (Gardening)",
             "🧹 വീട്ടുജോലി / ശുചീകരണം (Cleaning)",
-            "🍳 പാചകം / കാറ്ററിംഗ് സഹായി (Cook)",
             "⚡ വെൽഡിങ് & ഗ്രിൽ വർക്ക് (Welder)",
             "📦 ചുമട്ടുതൊഴിലാളി / കൂലിപ്പണി (Porter)"
     };
 
+    // Atmosphere Effects for Glass Background
     private static class Cloud { float x, y, radius, speed; }
     private static class Star { float x, y, radius, alphaSpeed; float alpha; }
     private static class RainDrop { float x, y, length, speed; }
@@ -158,6 +167,21 @@ public class MainActivity extends AppCompatActivity {
         etArea = findViewById(R.id.etArea);
         etWage = findViewById(R.id.etWage);
         etUpiId = findViewById(R.id.etUpiId);
+
+        // Dynamic category fields
+        layoutDriverSpecific = findViewById(R.id.layoutDriverSpecific);
+        etVehicleType = findViewById(R.id.etVehicleType);
+        etRatePerKm = findViewById(R.id.etRatePerKm);
+        etMinCharge = findViewById(R.id.etMinCharge);
+
+        layoutCookSpecific = findViewById(R.id.layoutCookSpecific);
+        etFoodItems = findViewById(R.id.etFoodItems);
+        etRatePerPlate = findViewById(R.id.etRatePerPlate);
+
+        layoutClimberSpecific = findViewById(R.id.layoutClimberSpecific);
+        etRatePerTree = findViewById(R.id.etRatePerTree);
+
+        layoutGeneralWage = findViewById(R.id.layoutGeneralWage);
     }
 
     private void checkUserSession() {
@@ -247,6 +271,29 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> regAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, registerList);
         spinnerWorkerJob.setAdapter(regAdapter);
 
+        spinnerWorkerJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = registerList[position];
+                layoutDriverSpecific.setVisibility(View.GONE);
+                layoutCookSpecific.setVisibility(View.GONE);
+                layoutClimberSpecific.setVisibility(View.GONE);
+                layoutGeneralWage.setVisibility(View.VISIBLE);
+
+                if (selected.contains("ഡ്രൈവർ")) {
+                    layoutDriverSpecific.setVisibility(View.VISIBLE);
+                    layoutGeneralWage.setVisibility(View.GONE);
+                } else if (selected.contains("പാചകം")) {
+                    layoutCookSpecific.setVisibility(View.VISIBLE);
+                    layoutGeneralWage.setVisibility(View.GONE);
+                } else if (selected.contains("തെങ്ങ് കയറ്റം")) {
+                    layoutClimberSpecific.setVisibility(View.VISIBLE);
+                    layoutGeneralWage.setVisibility(View.GONE);
+                }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         spinnerFilterJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -263,9 +310,9 @@ public class MainActivity extends AppCompatActivity {
             viewSearch.setVisibility(View.VISIBLE);
             viewRegister.setVisibility(View.GONE);
             viewProfile.setVisibility(View.GONE);
-            navSearch.setTextColor(Color.parseColor("#1B5E20"));
-            navRegister.setTextColor(Color.parseColor("#757575"));
-            navProfile.setTextColor(Color.parseColor("#757575"));
+            navSearch.setTextColor(Color.parseColor("#81C784"));
+            navRegister.setTextColor(Color.parseColor("#B0BEC5"));
+            navProfile.setTextColor(Color.parseColor("#B0BEC5"));
             renderWorkerCards(spinnerFilterJob.getSelectedItem().toString());
         });
 
@@ -273,18 +320,18 @@ public class MainActivity extends AppCompatActivity {
             viewSearch.setVisibility(View.GONE);
             viewRegister.setVisibility(View.VISIBLE);
             viewProfile.setVisibility(View.GONE);
-            navRegister.setTextColor(Color.parseColor("#1B5E20"));
-            navSearch.setTextColor(Color.parseColor("#757575"));
-            navProfile.setTextColor(Color.parseColor("#757575"));
+            navRegister.setTextColor(Color.parseColor("#81C784"));
+            navSearch.setTextColor(Color.parseColor("#B0BEC5"));
+            navProfile.setTextColor(Color.parseColor("#B0BEC5"));
         });
 
         navProfile.setOnClickListener(v -> {
             viewSearch.setVisibility(View.GONE);
             viewRegister.setVisibility(View.GONE);
             viewProfile.setVisibility(View.VISIBLE);
-            navProfile.setTextColor(Color.parseColor("#1B5E20"));
-            navSearch.setTextColor(Color.parseColor("#757575"));
-            navRegister.setTextColor(Color.parseColor("#757575"));
+            navProfile.setTextColor(Color.parseColor("#81C784"));
+            navSearch.setTextColor(Color.parseColor("#B0BEC5"));
+            navRegister.setTextColor(Color.parseColor("#B0BEC5"));
         });
     }
 
@@ -301,7 +348,8 @@ public class MainActivity extends AppCompatActivity {
                         doc.getString("job"),
                         doc.getString("area"),
                         doc.getLong("wage") != null ? doc.getLong("wage") : 0,
-                        doc.getString("upiId")
+                        doc.getString("upiId"),
+                        doc.getString("extraDetails")
                 );
                 cloudWorkerList.add(p);
             }
@@ -316,13 +364,55 @@ public class MainActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
         String area = etArea.getText().toString().trim();
-        String wageStr = etWage.getText().toString().trim();
         String upi = etUpiId.getText().toString().trim();
         String selectedJob = spinnerWorkerJob.getSelectedItem().toString();
 
-        if (name.isEmpty() || phone.isEmpty() || area.isEmpty() || wageStr.isEmpty()) {
-            Toast.makeText(this, "ദയവായി വിവരങ്ങൾ നൽകുക", Toast.LENGTH_SHORT).show();
+        long wage = 0;
+        StringBuilder extra = new StringBuilder();
+
+        if (name.isEmpty() || phone.isEmpty() || area.isEmpty()) {
+            Toast.makeText(this, "ദയവായി പേരും ഫോൺ നമ്പറും സ്ഥലവും നൽകുക", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if (selectedJob.contains("ഡ്രൈവർ")) {
+            String vType = etVehicleType.getText().toString().trim();
+            String perKm = etRatePerKm.getText().toString().trim();
+            String minCh = etMinCharge.getText().toString().trim();
+            if (perKm.isEmpty()) {
+                Toast.makeText(this, "1 Km നിരക്ക് നൽകുക", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            wage = Long.parseLong(perKm);
+            extra.append("വാഹനം: ").append(vType.isEmpty() ? "Auto/Car" : vType)
+                    .append(" | 1 Km നിരക്ക്: ₹").append(perKm);
+            if (!minCh.isEmpty()) extra.append(" (മിനിമം: ₹").append(minCh).append(")");
+        } else if (selectedJob.contains("പാചകം")) {
+            String food = etFoodItems.getText().toString().trim();
+            String plate = etRatePerPlate.getText().toString().trim();
+            if (plate.isEmpty()) {
+                Toast.makeText(this, "പ്ലേറ്റ് നിരക്ക് നൽകുക", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            wage = Long.parseLong(plate);
+            extra.append("വിഭവങ്ങൾ: ").append(food.isEmpty() ? "സദ്യ/ബിരിയാണി" : food)
+                    .append(" | നിരക്ക്: ₹").append(plate).append(" / പ്ലേറ്റ്");
+        } else if (selectedJob.contains("തെങ്ങ് കയറ്റം")) {
+            String perTree = etRatePerTree.getText().toString().trim();
+            if (perTree.isEmpty()) {
+                Toast.makeText(this, "1 തെങ്ങിന് നിരക്ക് നൽകുക", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            wage = Long.parseLong(perTree);
+            extra.append("1 തെങ്ങിന് നിരക്ക്: ₹").append(perTree);
+        } else {
+            String wageStr = etWage.getText().toString().trim();
+            if (wageStr.isEmpty()) {
+                Toast.makeText(this, "കൂലി നിരക്ക് നൽകുക", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            wage = Long.parseLong(wageStr);
+            extra.append("ദിവസ വേതനം: ₹").append(wage);
         }
 
         Map<String, Object> data = new HashMap<>();
@@ -331,16 +421,23 @@ public class MainActivity extends AppCompatActivity {
         data.put("phone", phone);
         data.put("job", selectedJob);
         data.put("area", area);
-        data.put("wage", Long.parseLong(wageStr));
+        data.put("wage", wage);
         data.put("upiId", upi);
+        data.put("extraDetails", extra.toString());
 
         db.collection("workers").add(data).addOnSuccessListener(doc -> {
-            Toast.makeText(this, "തൊഴിൽ ക്ലൗഡിൽ പബ്ലിഷ് ചെയ്തു! എല്ലാവർക്കും കാണാം.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "വിവരങ്ങൾ വിജയകരമായി പബ്ലിഷ് ചെയ്തു!", Toast.LENGTH_LONG).show();
             etName.setText("");
             etPhone.setText("");
             etArea.setText("");
             etWage.setText("");
             etUpiId.setText("");
+            etVehicleType.setText("");
+            etRatePerKm.setText("");
+            etMinCharge.setText("");
+            etFoodItems.setText("");
+            etRatePerPlate.setText("");
+            etRatePerTree.setText("");
             navSearch.performClick();
         });
     }
@@ -358,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
         if (filtered.isEmpty()) {
             TextView tvEmpty = new TextView(this);
             tvEmpty.setText("ഈ വിഭാഗത്തിൽ നിലവിൽ ആരും രജിസ്റ്റർ ചെയ്തിട്ടില്ല.\n'എന്റെ തൊഴിൽ' വഴി രജിസ്റ്റർ ചെയ്താൽ എല്ലാവർക്കും കാണാം.");
-            tvEmpty.setTextColor(isNight ? Color.parseColor("#90A4AE") : Color.GRAY);
+            tvEmpty.setTextColor(Color.parseColor("#B0BEC5"));
             tvEmpty.setPadding(20, 40, 20, 20);
             tvEmpty.setTextSize(13f);
             containerWorkersList.addView(tvEmpty);
@@ -366,42 +463,47 @@ public class MainActivity extends AppCompatActivity {
         }
 
         for (WorkerProfile worker : filtered) {
-            CardView card = new CardView(this);
-            card.setRadius(14f);
-            card.setCardElevation(3f);
-            card.setUseCompatPadding(true);
-            if (isNight) card.setCardBackgroundColor(Color.parseColor("#1B263B"));
+            // Liquid Glass Card Styling
+            LinearLayout glassCard = new LinearLayout(this);
+            glassCard.setOrientation(LinearLayout.VERTICAL);
+            glassCard.setBackgroundResource(R.drawable.glass_card_bg);
+            glassCard.setPadding(20, 18, 20, 18);
 
-            LinearLayout layout = new LinearLayout(this);
-            layout.setOrientation(LinearLayout.VERTICAL);
-            layout.setPadding(20, 18, 20, 18);
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            cardParams.setMargins(0, 0, 0, 16);
+            glassCard.setLayoutParams(cardParams);
 
             TextView tvName = new TextView(this);
             tvName.setText(worker.name + " (" + worker.area + ")");
             tvName.setTextSize(16f);
-            tvName.setTextColor(isNight ? Color.parseColor("#81C784") : Color.parseColor("#1B5E20"));
+            tvName.setTextColor(Color.parseColor("#FFFFFF"));
             tvName.setTypeface(null, android.graphics.Typeface.BOLD);
 
             TextView tvJob = new TextView(this);
             tvJob.setText(worker.job);
             tvJob.setTextSize(13f);
-            tvJob.setPadding(0, 4, 0, 4);
-            tvJob.setTextColor(isNight ? Color.parseColor("#CFD8DC") : Color.parseColor("#37474F"));
+            tvJob.setPadding(0, 4, 0, 2);
+            tvJob.setTextColor(Color.parseColor("#81C784"));
 
-            TextView tvWage = new TextView(this);
-            tvWage.setText("വേതനം: ₹ " + worker.wage);
-            tvWage.setTextSize(15f);
-            tvWage.setTextColor(Color.parseColor("#FF7043"));
-            tvWage.setTypeface(null, android.graphics.Typeface.BOLD);
+            TextView tvDetails = new TextView(this);
+            tvDetails.setText(worker.extraDetails != null && !worker.extraDetails.isEmpty() ? worker.extraDetails : ("വേതനം: ₹ " + worker.wage));
+            tvDetails.setTextSize(14f);
+            tvDetails.setTextColor(Color.parseColor("#FFD54F"));
+            tvDetails.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvDetails.setPadding(0, 2, 0, 6);
 
             LinearLayout btnRow = new LinearLayout(this);
             btnRow.setOrientation(LinearLayout.HORIZONTAL);
             btnRow.setWeightSum(3);
-            btnRow.setPadding(0, 12, 0, 0);
+            btnRow.setPadding(0, 10, 0, 0);
 
+            // Frosted Glass Buttons
             Button btnCall = new Button(this);
             btnCall.setText("വിളിക്കുക 📞");
-            btnCall.setBackgroundColor(Color.parseColor("#2E7D32"));
+            btnCall.setBackgroundColor(Color.parseColor("#332E7D32"));
             btnCall.setTextColor(Color.WHITE);
             LinearLayout.LayoutParams p1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             p1.rightMargin = 4;
@@ -410,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
 
             Button btnChat = new Button(this);
             btnChat.setText("ചാറ്റ് 💬");
-            btnChat.setBackgroundColor(Color.parseColor("#0288D1"));
+            btnChat.setBackgroundColor(Color.parseColor("#330288D1"));
             btnChat.setTextColor(Color.WHITE);
             LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             p2.rightMargin = 4;
@@ -418,8 +520,8 @@ public class MainActivity extends AppCompatActivity {
             btnChat.setOnClickListener(v -> openDirectChat(worker.name, worker.phone));
 
             Button btnPay = new Button(this);
-            btnPay.setText("കൂലി (UPI) ₹");
-            btnPay.setBackgroundColor(Color.parseColor("#EF6C00"));
+            btnPay.setText("കൂലി ₹");
+            btnPay.setBackgroundColor(Color.parseColor("#33EF6C00"));
             btnPay.setTextColor(Color.WHITE);
             LinearLayout.LayoutParams p3 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             btnPay.setLayoutParams(p3);
@@ -428,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                 Uri upiUri = Uri.parse("upi://pay").buildUpon()
                         .appendQueryParameter("pa", targetUpi)
                         .appendQueryParameter("pn", worker.name)
-                        .appendQueryParameter("tn", "Kottayi Coolie")
+                        .appendQueryParameter("tn", "Kottayi Coolie Service")
                         .appendQueryParameter("am", String.valueOf(worker.wage))
                         .appendQueryParameter("cu", "INR")
                         .build();
@@ -443,13 +545,12 @@ public class MainActivity extends AppCompatActivity {
             btnRow.addView(btnChat);
             btnRow.addView(btnPay);
 
-            layout.addView(tvName);
-            layout.addView(tvJob);
-            layout.addView(tvWage);
-            layout.addView(btnRow);
+            glassCard.addView(tvName);
+            glassCard.addView(tvJob);
+            glassCard.addView(tvDetails);
+            glassCard.addView(btnRow);
 
-            card.addView(layout);
-            containerWorkersList.addView(card);
+            containerWorkersList.addView(glassCard);
         }
     }
 
@@ -466,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAtmosphere() {
-        cloudPaint.setColor(Color.parseColor("#3581C784"));
+        cloudPaint.setColor(Color.parseColor("#26FFFFFF"));
         cloudPaint.setStyle(Paint.Style.FILL);
         cloudPaint.setAntiAlias(true);
 
@@ -519,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isNight) {
                     canvas.drawCircle(width - 150, 180, 36, moonPaint);
                     Paint shadow = new Paint();
-                    shadow.setColor(Color.parseColor("#0B1320"));
+                    shadow.setColor(Color.parseColor("#061A24"));
                     canvas.drawCircle(width - 138, 172, 32, shadow);
                     for (Star s : stars) {
                         s.alpha += s.alphaSpeed;
@@ -531,15 +632,20 @@ public class MainActivity extends AppCompatActivity {
                 if (hasClouds) {
                     for (Cloud c : clouds) {
                         c.x += c.speed;
-                        if (c.x - c.radius > width) c.x = -c.radius * 2;
+                        if (c.x - c.radius > width) {
+                            c.x = -c.radius * 2;
+                        }
                         canvas.drawCircle(c.x, c.y, c.radius, cloudPaint);
                         canvas.drawCircle(c.x + (c.radius * 0.7f), c.y - (c.radius * 0.2f), c.radius * 0.8f, cloudPaint);
+                        canvas.drawCircle(c.x - (c.radius * 0.6f), c.y + (c.radius * 0.1f), c.radius * 0.7f, cloudPaint);
                     }
                 }
                 if (isRainy) {
                     for (RainDrop d : rainDrops) {
                         d.y += d.speed;
-                        if (d.y > canvas.getHeight() && canvas.getHeight() > 0) d.y = -d.length;
+                        if (d.y > canvas.getHeight() && canvas.getHeight() > 0) {
+                            d.y = -d.length;
+                        }
                         canvas.drawLine(d.x, d.y, d.x - 4, d.y + d.length, rainPaint);
                     }
                 }
@@ -582,12 +688,8 @@ public class MainActivity extends AppCompatActivity {
                     isRainy = ((weatherCode >= 51 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 82) || weatherCode >= 95);
                     if (isNight) {
                         tvWeatherBadge.setText("🌙 രാത്രി (" + (int)temp + "°C)");
-                        rootContainer.setBackgroundColor(Color.parseColor("#0D1B2A"));
-                        layoutHeader.setBackgroundColor(Color.parseColor("#0B1320"));
                     } else if (isRainy) {
                         tvWeatherBadge.setText("🌧️ മഴ (" + (int)temp + "°C)");
-                        rootContainer.setBackgroundColor(Color.parseColor("#ECEFF1"));
-                        layoutHeader.setBackgroundColor(Color.parseColor("#263238"));
                     } else {
                         tvWeatherBadge.setText("⛅ മേഘാവൃതം (" + (int)temp + "°C)");
                     }
