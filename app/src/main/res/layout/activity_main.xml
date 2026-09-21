@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7F6">
+    android:background="#F4F6F5">
 
-    <!-- Main Dashboard -->
+    <!-- Main Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Header Bar -->
+        <!-- Top Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#1B5E20"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -28,95 +28,214 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tvRoleSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="കോട്ടായി പഞ്ചായത്ത് ലോക്കൽ തൊഴിൽ &amp; സർവീസ്"
+                android:text="കോട്ടായി ഗ്രാമപഞ്ചായത്ത് സർവീസ് നെറ്റ്‌വർക്ക്"
                 android:textColor="#C8E6C9"
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <ScrollView
+        <!-- Role Selection Screen (Shown First) -->
+        <LinearLayout
+            android:id="@+id/layoutRoleSelection"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="നിങ്ങൾ ആരാണ്?"
+                android:textColor="#1B5E20"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="തുടരുന്നതിനായി നിങ്ങളുടെ റോൾ തിരഞ്ഞെടുക്കുക"
+                android:textColor="#555555"
+                android:textSize="13sp" />
+
+            <!-- Customer Option -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardSelectCustomer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🙋‍♂️"
+                        android:textSize="32sp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="സേവനം ആവശ്യമുണ്ട് (Customer)"
+                            android:textColor="#1B5E20"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="തൊഴിലാളികളെ കണ്ടെത്താൻ &amp; ബുക്ക് ചെയ്യാൻ"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Worker Option -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardSelectWorker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👷"
+                        android:textSize="32sp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="സേവന ദാതാവ് (Worker / Coolie)"
+                            android:textColor="#1B5E20"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="തൊഴിലും കൂലി നിരക്കും ചേർക്കാൻ"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <!-- Customer View (Search & Book Workers) -->
+        <LinearLayout
+            android:id="@+id/layoutCustomerDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnBackFromCustomer"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:backgroundTint="#757575"
+                android:text="⬅️ റോൾ മാറ്റുക"
+                android:textSize="11sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="തൊഴിൽ വിഭാഗം തിരഞ്ഞെടുക്കുക"
+                android:textColor="#1B5E20"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinnerFilterJob"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:background="#E0E0E0" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:id="@+id/containerCustomerWorkers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+        </LinearLayout>
+
+        <!-- Worker View (Self Registration & Dashboard) -->
+        <ScrollView
+            android:id="@+id/layoutWorkerDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Service Categories -->
-                <TextView
+                <Button
+                    android:id="@+id/btnBackFromWorker"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="സേവനം തിരഞ്ഞെടുക്കുക"
-                    android:textColor="#2E7D32"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_height="36dp"
+                    android:backgroundTint="#757575"
+                    android:text="⬅️ റോൾ മാറ്റുക"
+                    android:textSize="11sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
-
-                    <Button
-                        android:id="@+id/btnCategoryClimber"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="#2E7D32"
-                        android:text="തെങ്ങ് കയറ്റം 🌴"
-                        android:textSize="11sp" />
-
-                    <Button
-                        android:id="@+id/btnCategoryDriver"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="#388E3C"
-                        android:text="ഡ്രൈവർ 🚗"
-                        android:textSize="11sp" />
-
-                    <Button
-                        android:id="@+id/btnCategoryElectrician"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="#43A047"
-                        android:text="ഇലക്ട്രീഷ്യൻ 💡"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <!-- Worker List Container -->
-                <TextView
-                    android:id="@+id/tvSectionTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="തൊഴിലാളികൾ (കോട്ടായി)"
-                    android:textColor="#333333"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:id="@+id/workerListContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical" />
-
-                <!-- Add New Job / Worker Form Section -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginTop="12dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="3dp">
 
@@ -129,68 +248,84 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="നിങ്ങൾ കോട്ടായിയിലെ തൊഴിലാളിയാണോ?"
+                            android:text="തൊഴിലാളി രജിസ്ട്രേഷൻ 🛠️"
                             android:textColor="#1B5E20"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="നിങ്ങളുടെ പേരും ദിവസക്കൂലിയും ഇവിടെ ചേർക്കൂ"
-                            android:textColor="#666666"
-                            android:textSize="12sp" />
-
                         <EditText
-                            android:id="@+id/etWorkerName"
+                            android:id="@+id/etName"
                             android:layout_width="match_parent"
                             android:layout_height="46dp"
                             android:layout_marginTop="10dp"
                             android:background="#EEEEEE"
-                            android:hint="പേര് (Name)"
+                            android:hint="മുഴുവൻ പേര് (Name)"
                             android:padding="10dp"
                             android:textSize="13sp" />
 
                         <EditText
-                            android:id="@+id/etWorkerPhone"
+                            android:id="@+id/etPhone"
                             android:layout_width="match_parent"
                             android:layout_height="46dp"
                             android:layout_marginTop="8dp"
                             android:background="#EEEEEE"
-                            android:hint="ഫോൺ നമ്പർ (Phone)"
+                            android:hint="ഫോൺ നമ്പർ (WhatsApp/Calling)"
                             android:inputType="phone"
                             android:padding="10dp"
                             android:textSize="13sp" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="തൊഴിൽ വിഭാഗം (Job Category):"
+                            android:textSize="12sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerWorkerJob"
+                            android:layout_width="match_parent"
+                            android:layout_height="46dp"
+                            android:layout_marginTop="4dp"
+                            android:background="#EEEEEE" />
+
                         <EditText
-                            android:id="@+id/etWorkerSkill"
+                            android:id="@+id/etArea"
                             android:layout_width="match_parent"
                             android:layout_height="46dp"
                             android:layout_marginTop="8dp"
                             android:background="#EEEEEE"
-                            android:hint="തൊഴിൽ (ഉദാ: പെയിന്റർ, പ്ലംബർ)"
+                            android:hint="കോട്ടായിലെ സ്ഥലം / വാർഡ് (Area/Ward)"
                             android:padding="10dp"
                             android:textSize="13sp" />
 
                         <EditText
-                            android:id="@+id/etWorkerWage"
+                            android:id="@+id/etWage"
                             android:layout_width="match_parent"
                             android:layout_height="46dp"
                             android:layout_marginTop="8dp"
                             android:background="#EEEEEE"
-                            android:hint="കൂലി നിരക്ക് ₹ (ഉദാ: 850)"
+                            android:hint="കൂലി നിരക്ക് ₹ (ദിവസം / മണിക്കൂർ)"
                             android:inputType="number"
                             android:padding="10dp"
                             android:textSize="13sp" />
 
+                        <EditText
+                            android:id="@+id/etUpiId"
+                            android:layout_width="match_parent"
+                            android:layout_height="46dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#EEEEEE"
+                            android:hint="UPI ID (GPay / PhonePe payment-ന്)"
+                            android:padding="10dp"
+                            android:textSize="13sp" />
+
                         <Button
-                            android:id="@+id/btnAddWorker"
+                            android:id="@+id/btnRegisterWorker"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="14dp"
                             android:backgroundTint="#1B5E20"
-                            android:text="തൊഴിൽ രജിസ്റ്റർ ചെയ്യുക (Register)" />
+                            android:text="എന്റെ പ്രൊഫൈൽ ചേർക്കുക (Save)" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
@@ -209,9 +344,8 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/splashLogo"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:src="@drawable/ic_launcher_foreground" />
 
         <TextView
@@ -227,9 +361,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="ഗ്രാമത്തിന്റെ കൂട്ടായ്മ • നാടിന്റെ നന്മ"
+            android:text="കോട്ടായി പഞ്ചായത്ത് കൂലി &amp; സർവീസ്"
             android:textColor="#E8F5E9"
             android:textSize="13sp" />
     </LinearLayout>
-
 </FrameLayout>
