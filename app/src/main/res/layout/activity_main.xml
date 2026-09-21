@@ -4,8 +4,22 @@
     android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F4F1">
+    android:background="#0A192F">
 
+    <!-- പശ്ചാത്തലത്തിൽ കോട്ടായിയുടെ മനോഹര ചിത്രം -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/kottayi_bg" />
+
+    <!-- ലിക്വിഡ് ഗ്ലാസ് ഫീലിനായുള്ള ഡാർക്ക് ബ്ലെൻഡ് ഓവർലേ -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80061A24" />
+
+    <!-- തത്സമയ മേഘങ്ങളും മഴയും -->
     <View
         android:id="@+id/weatherEffectView"
         android:layout_width="match_parent"
@@ -13,86 +27,88 @@
         android:clickable="false"
         android:focusable="false" />
 
-    <!-- 1. LOGIN & SIGNUP SCREEN -->
+    <!-- 1. ലിക്വിഡ് ഗ്ലാസ് ലോഗിൻ കാർഡ് -->
     <LinearLayout
         android:id="@+id/layoutAuth"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="24dp"
+        android:padding="20dp"
         android:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="എന്റെ കോട്ടായി 🌴"
-            android:textColor="#1B5E20"
-            android:textSize="26sp"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvAuthHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="തുടരുന്നതിനായി ലോഗിൻ ചെയ്യുക"
-            android:textColor="#555555"
+            android:textColor="#B0BEC5"
             android:textSize="13sp" />
 
-        <androidx.cardview.widget.CardView
+        <!-- ഫ്രോസ്റ്റഡ് ഗ്ലാസ് കണ്ടെയ്നർ -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="4dp">
+            android:layout_marginTop="22dp"
+            android:background="@drawable/glass_card_bg"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/etAuthEmail"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:background="@drawable/glass_input_bg"
+                android:hint="Email (ഉദാ: user@kottayi.com)"
+                android:inputType="textEmailAddress"
+                android:padding="12dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#90A4AE"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/etAuthPassword"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/glass_input_bg"
+                android:hint="Password (പാസ്‌വേഡ്)"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#90A4AE"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#402E7D32"
+                android:text="ലോഗിൻ ചെയ്യുക (Login)"
+                android:textColor="#FFFFFF" />
 
-                <EditText
-                    android:id="@+id/etAuthEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:background="#EEEEEE"
-                    android:hint="Email (ഉദാ: user@kottayi.com)"
-                    android:inputType="textEmailAddress"
-                    android:padding="10dp"
-                    android:textSize="13sp" />
-
-                <EditText
-                    android:id="@+id/etAuthPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:layout_marginTop="10dp"
-                    android:background="#EEEEEE"
-                    android:hint="Password (പാസ്‌വേഡ്)"
-                    android:inputType="textPassword"
-                    android:padding="10dp"
-                    android:textSize="13sp" />
-
-                <Button
-                    android:id="@+id/btnLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:backgroundTint="#1B5E20"
-                    android:text="ലോഗിൻ ചെയ്യുക (Login)" />
-
-                <Button
-                    android:id="@+id/btnSignUp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:backgroundTint="#2E7D32"
-                    android:text="പുതിയ അക്കൗണ്ട് ഉണ്ടാക്കുക (Sign Up)" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            <Button
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#26FFFFFF"
+                android:text="പുതിയ അക്കൗണ്ട് ഉണ്ടാക്കുക"
+                android:textColor="#E0E0E0" />
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- 2. MAIN APPLICATION CONTENT -->
+    <!-- 2. മെയിൻ ആപ്പ് ഡാഷ്‌ബോർഡ് -->
     <LinearLayout
         android:id="@+id/layoutMainApp"
         android:layout_width="match_parent"
@@ -100,18 +116,17 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <!-- Top Header -->
+        <!-- ഗ്ലാസ് ഹെഡ്ഡർ -->
         <LinearLayout
             android:id="@+id/layoutHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#1B5E20"
-            android:elevation="4dp"
+            android:background="#4D000000"
             android:orientation="vertical"
             android:paddingStart="16dp"
-            android:paddingTop="12dp"
+            android:paddingTop="14dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="12dp">
+            android:paddingBottom="14dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,18 +140,18 @@
                     android:layout_weight="1"
                     android:text="എന്റെ കോട്ടായി 🌴"
                     android:textColor="#FFFFFF"
-                    android:textSize="20sp"
+                    android:textSize="21sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvWeatherBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#33FFFFFF"
-                    android:paddingStart="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="4dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:paddingStart="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
                     android:text="⛅ കോട്ടായി"
                     android:textColor="#FFFFFF"
                     android:textSize="11sp"
@@ -149,30 +164,30 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="കോട്ടായി പഞ്ചായത്ത് കൂലിപ്പണി &amp; സർവീസ്"
-                android:textColor="#C8E6C9"
+                android:textColor="#B0BEC5"
                 android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- View 1: Search Workers List -->
+        <!-- View 1: തിരയൽ പേജ് -->
         <LinearLayout
             android:id="@+id/viewSearch"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="10dp"
+            android:padding="12dp"
             android:visibility="visible">
 
             <Spinner
                 android:id="@+id/spinnerFilterJob"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:background="#ECEFF1" />
+                android:background="@drawable/glass_card_bg" />
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_weight="1">
 
                 <LinearLayout
@@ -183,112 +198,238 @@
             </ScrollView>
         </LinearLayout>
 
-        <!-- View 2: Worker Self-Registration -->
+        <!-- View 2: തൊഴിൽ രജിസ്ട്രേഷൻ പേജ് -->
         <ScrollView
             android:id="@+id/viewRegister"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="12dp"
+            android:padding="14dp"
             android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@drawable/glass_card_bg"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <androidx.cardview.widget.CardView
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="തൊഴിലും നിരക്കും രജിസ്റ്റർ ചെയ്യാം 👷"
+                    android:textColor="#81C784"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etName"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:hint="നിങ്ങളുടെ പേര് (Name)"
+                    android:padding="10dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#90A4AE"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:hint="ഫോൺ നമ്പർ"
+                    android:inputType="phone"
+                    android:padding="10dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#90A4AE"
+                    android:textSize="13sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerWorkerJob"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg" />
+
+                <!-- Driver Dynamic -->
+                <LinearLayout
+                    android:id="@+id/layoutDriverSpecific"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="3dp">
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:visibility="gone">
+
+                    <EditText
+                        android:id="@+id/etVehicleType"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/glass_input_bg"
+                        android:hint="വാഹനം (Auto, Car, Pickup)"
+                        android:padding="8dp"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#90A4AE"
+                        android:textSize="12sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="തൊഴിലും കൂലിയും രജിസ്റ്റർ ചെയ്യാം 👷"
-                            android:textColor="#1B5E20"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
                         <EditText
-                            android:id="@+id/etName"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="10dp"
-                            android:background="#EEEEEE"
-                            android:hint="നിങ്ങളുടെ പേര് (Name)"
-                            android:padding="10dp"
-                            android:textSize="13sp" />
-
-                        <EditText
-                            android:id="@+id/etPhone"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="8dp"
-                            android:background="#EEEEEE"
-                            android:hint="ഫോൺ നമ്പർ (Calling/WhatsApp)"
-                            android:inputType="phone"
-                            android:padding="10dp"
-                            android:textSize="13sp" />
-
-                        <Spinner
-                            android:id="@+id/spinnerWorkerJob"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="8dp"
-                            android:background="#EEEEEE" />
-
-                        <EditText
-                            android:id="@+id/etArea"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="8dp"
-                            android:background="#EEEEEE"
-                            android:hint="സ്ഥലം / വാർഡ് (ഉദാ: കോട്ടായി ജംഗ്ഷൻ)"
-                            android:padding="10dp"
-                            android:textSize="13sp" />
-
-                        <EditText
-                            android:id="@+id/etWage"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="8dp"
-                            android:background="#EEEEEE"
-                            android:hint="കൂലി നിരക്ക് ₹"
+                            android:id="@+id/etRatePerKm"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/glass_input_bg"
+                            android:hint="1 Km നിരക്ക് ₹"
                             android:inputType="number"
-                            android:padding="10dp"
-                            android:textSize="13sp" />
+                            android:padding="8dp"
+                            android:textColor="#FFFFFF"
+                            android:textColorHint="#90A4AE"
+                            android:textSize="12sp" />
+
+                        <View android:layout_width="6dp" android:layout_height="1dp" />
 
                         <EditText
-                            android:id="@+id/etUpiId"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="8dp"
-                            android:background="#EEEEEE"
-                            android:hint="UPI ID (GPay/PhonePe)"
-                            android:padding="10dp"
-                            android:textSize="13sp" />
-
-                        <Button
-                            android:id="@+id/btnSaveProfile"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:backgroundTint="#1B5E20"
-                            android:text="ക്ലൗഡിൽ സേവ് ചെയ്യുക (Publish)" />
+                            android:id="@+id/etMinCharge"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/glass_input_bg"
+                            android:hint="മിനിമം ചാർജ് ₹"
+                            android:inputType="number"
+                            android:padding="8dp"
+                            android:textColor="#FFFFFF"
+                            android:textColorHint="#90A4AE"
+                            android:textSize="12sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <!-- Cook Dynamic -->
+                <LinearLayout
+                    android:id="@+id/layoutCookSpecific"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:visibility="gone">
+
+                    <EditText
+                        android:id="@+id/etFoodItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/glass_input_bg"
+                        android:hint="വിഭവങ്ങൾ (ബിരിയാണി, സദ്യ)"
+                        android:padding="8dp"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#90A4AE"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/etRatePerPlate"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/glass_input_bg"
+                        android:hint="പ്ലേറ്റ് നിരക്ക് ₹"
+                        android:inputType="number"
+                        android:padding="8dp"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#90A4AE"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Climber Dynamic -->
+                <LinearLayout
+                    android:id="@+id/layoutClimberSpecific"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    android:visibility="gone">
+
+                    <EditText
+                        android:id="@+id/etRatePerTree"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/glass_input_bg"
+                        android:hint="1 തെങ്ങിന് നിരക്ക് ₹"
+                        android:inputType="number"
+                        android:padding="8dp"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#90A4AE"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- General Rate -->
+                <LinearLayout
+                    android:id="@+id/layoutGeneralWage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etWage"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:background="@drawable/glass_input_bg"
+                        android:hint="കൂലി നിരക്ക് ₹ (ദിവസം / പണിക്ക്)"
+                        android:inputType="number"
+                        android:padding="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#90A4AE"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/etArea"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:hint="സ്ഥലം / വാർഡ് (ഉദാ: കോട്ടായി)"
+                    android:padding="10dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#90A4AE"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etUpiId"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/glass_input_bg"
+                    android:hint="UPI ID (GPay/PhonePe)"
+                    android:padding="10dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#90A4AE"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnSaveProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:backgroundTint="#402E7D32"
+                    android:text="ക്ലൗഡിൽ സേവ് ചെയ്യുക (Publish)"
+                    android:textColor="#FFFFFF" />
             </LinearLayout>
         </ScrollView>
 
-        <!-- View 3: Profile & Google Play Store Data Deletion -->
+        <!-- View 3: പ്രൊഫൈൽ പേജ് -->
         <ScrollView
             android:id="@+id/viewProfile"
             android:layout_width="match_parent"
@@ -300,64 +441,52 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@drawable/glass_card_bg"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <androidx.cardview.widget.CardView
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="എന്റെ പ്രൊഫൈൽ ⚙️"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvUserEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Account: -"
+                    android:textColor="#CFD8DC"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnLogout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="3dp">
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="#33FFFFFF"
+                    android:text="ലോഗൗട്ട് ചെയ്യുക (Log Out)"
+                    android:textColor="#FFFFFF" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="എന്റെ പ്രൊഫൈൽ / ക്രമീകരണങ്ങൾ ⚙️"
-                            android:textColor="#1B5E20"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvUserEmail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Account: -"
-                            android:textColor="#555555"
-                            android:textSize="13sp" />
-
-                        <Button
-                            android:id="@+id/btnLogout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:backgroundTint="#757575"
-                            android:text="ലോഗൗട്ട് ചെയ്യുക (Log Out)" />
-
-                        <!-- Mandatory Play Store Account Deletion -->
-                        <Button
-                            android:id="@+id/btnDeleteAccount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:backgroundTint="#D32F2F"
-                            android:text="⚠️ അക്കൗണ്ടും ഡാറ്റയും പൂർണ്ണമായി ഇല്ലാതാക്കുക (Delete All Data)" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                <Button
+                    android:id="@+id/btnDeleteAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="#59D32F2F"
+                    android:text="⚠️ അക്കൗണ്ടും ഡാറ്റയും ഇല്ലാതാക്കുക (Delete Data)"
+                    android:textColor="#FFCDD2" />
             </LinearLayout>
         </ScrollView>
 
-        <!-- Bottom Navigation Bar -->
+        <!-- ഗ്ലാസ് ബോട്ടം നാവിഗേഷൻ ബാർ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="#FFFFFF"
-            android:elevation="8dp"
+            android:background="#4D000000"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -368,7 +497,7 @@
                 android:layout_weight="1"
                 android:background="?android:attr/selectableItemBackground"
                 android:text="🔍 പണികൾ"
-                android:textColor="#1B5E20"
+                android:textColor="#81C784"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -379,7 +508,7 @@
                 android:layout_weight="1"
                 android:background="?android:attr/selectableItemBackground"
                 android:text="👷 എന്റെ തൊഴിൽ"
-                android:textColor="#555555"
+                android:textColor="#B0BEC5"
                 android:textSize="11sp" />
 
             <Button
@@ -389,17 +518,17 @@
                 android:layout_weight="1"
                 android:background="?android:attr/selectableItemBackground"
                 android:text="👤 പ്രൊഫൈൽ"
-                android:textColor="#555555"
+                android:textColor="#B0BEC5"
                 android:textSize="11sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Splash Screen -->
+    <!-- പ്രീമിയം സ്പ്ലാഷ് സ്ക്രീൻ -->
     <LinearLayout
         android:id="@+id/splashOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#1B5E20"
+        android:background="#E60A192F"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
@@ -407,8 +536,8 @@
 
         <ImageView
             android:id="@+id/splashLogo"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:src="@drawable/ic_launcher_foreground" />
 
         <TextView
@@ -416,7 +545,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:text="എന്റെ കോട്ടായി"
+            android:text="എന്റെ കോട്ടായി 🌴"
             android:textColor="#FFD700"
             android:textSize="28sp"
             android:textStyle="bold" />
