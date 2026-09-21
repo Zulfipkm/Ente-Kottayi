@@ -11,10 +11,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,26 +27,49 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private View splashOverlay;
-    private ImageView splashLogo;
-    private LinearLayout workerListContainer;
-    private EditText etWorkerName, etWorkerPhone, etWorkerSkill, etWorkerWage;
-    private Button btnAddWorker;
+    private LinearLayout layoutRoleSelection, layoutCustomerDashboard, containerCustomerWorkers;
+    private View layoutWorkerDashboard;
+    private TextView tvRoleSubtitle;
 
-    private static class Worker {
+    private EditText etName, etPhone, etArea, etWage, etUpiId;
+    private Spinner spinnerWorkerJob, spinnerFilterJob;
+    private Button btnRegisterWorker, btnBackFromCustomer, btnBackFromWorker;
+
+    public static class WorkerProfile {
         String name;
-        String skill;
         String phone;
-        int dailyWage;
+        String job;
+        String area;
+        int wage;
+        String upiId;
 
-        Worker(String name, String skill, String phone, int dailyWage) {
+        public WorkerProfile(String name, String phone, String job, String area, int wage, String upiId) {
             this.name = name;
-            this.skill = skill;
             this.phone = phone;
-            this.dailyWage = dailyWage;
+            this.job = job;
+            this.area = area;
+            this.wage = wage;
+            this.upiId = upiId;
         }
     }
 
-    private List<Worker> workers = new ArrayList<>();
+    // No hardcoded contacts. Only workers who self-register will appear.
+    private List<WorkerProfile> registeredWorkers = new ArrayList<>();
+
+    private final String[] allJobs = {
+            "എല്ലാ തൊഴിലും (All Jobs)",
+            "തെങ്ങ് കയറ്റം (Coconut Climber)",
+            "ഡ്രൈവർ (Driver - Auto/Car/Jeep)",
+            "ഇലക്ട്രീഷ്യൻ (Electrician)",
+            "പ്ലംബർ (Plumber)",
+            "പെയിന്റിംഗ് (Painter)",
+            "മേസ്തിരി / നിർമ്മാണം (Mason/Civil)",
+            "കൃഷിപ്പണി / കാർഷിക കൂലി (Farm Labor)",
+            "തടിപ്പണി (Carpenter)",
+            "വീട്ടുജോലി / ശുചീകരണം (Domestic Help)",
+            "മരപ്പണി & വെട്ട് (Tree Cutting)",
+            "വെൽഡിങ് (Welder)"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,66 +77,162 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initViews();
-        loadInitialKottayiWorkers();
-        renderWorkerCards(workers);
-        setupListeners();
-
-        playKeralaTraditionalTone();
-        handleSplashDismiss();
+        setupSpinners();
+        setupRoleRouting();
+        playKeralaTone();
+        dismissSplash();
     }
 
     private void initViews() {
         splashOverlay = findViewById(R.id.splashOverlay);
-        splashLogo = findViewById(R.id.splashLogo);
-        workerListContainer = findViewById(R.id.workerListContainer);
+        layoutRoleSelection = findViewById(R.id.layoutRoleSelection);
+        layoutCustomerDashboard = findViewById(R.id.layoutCustomerDashboard);
+        layoutWorkerDashboard = findViewById(R.id.layoutWorkerDashboard);
+        containerCustomerWorkers = findViewById(R.id.containerCustomerWorkers);
+        tvRoleSubtitle = findViewById(R.id.tvRoleSubtitle);
 
-        etWorkerName = findViewById(R.id.etWorkerName);
-        etWorkerPhone = findViewById(R.id.etWorkerPhone);
-        etWorkerSkill = findViewById(R.id.etWorkerSkill);
-        etWorkerWage = findViewById(R.id.etWorkerWage);
-        btnAddWorker = findViewById(R.id.btnAddWorker);
+        etName = findViewById(R.id.etName);
+        etPhone = findViewById(R.id.etPhone);
+        etArea = findViewById(R.id.etArea);
+        etWage = findViewById(R.id.etWage);
+        etUpiId = findViewById(R.id.etUpiId);
+
+        spinnerWorkerJob = findViewById(R.id.spinnerWorkerJob);
+        spinnerFilterJob = findViewById(R.id.spinnerFilterJob);
+
+        btnRegisterWorker = findViewById(R.id.btnRegisterWorker);
+        btnBackFromCustomer = findViewById(R.id.btnBackFromCustomer);
+        btnBackFromWorker = findViewById(R.id.btnBackFromWorker);
     }
 
-    private void loadInitialKottayiWorkers() {
-        workers.add(new Worker("രാജൻ കെ. (Rajan)", "തെങ്ങ് കയറ്റം (Coconut Climber)", "9876543210", 600));
-        workers.add(new Worker("മണികണ്ഠൻ (Mani)", "ഡ്രൈവർ (Car/Auto Driver)", "9876543211", 750));
-        workers.add(new Worker("സുരേഷ് ബാബു (Suresh)", "ഇലക്ട്രീഷ്യൻ (Electrician)", "9876543212", 800));
+    private void setupSpinners() {
+        // Dropdown for Customer Filter
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, allJobs);
+        spinnerFilterJob.setAdapter(filterAdapter);
+
+        // Dropdown for Worker Registration (skip "All Jobs")
+        String[] workerJobs = new String[allJobs.length - 1];
+        System.arraycopy(allJobs, 1, workerJobs, 0, allJobs.length - 1);
+        ArrayAdapter<String> registerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, workerJobs);
+        spinnerWorkerJob.setAdapter(registerAdapter);
+
+        spinnerFilterJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                renderCustomerWorkerList(allJobs[position]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
-    private void renderWorkerCards(List<Worker> listToRender) {
-        workerListContainer.removeAllViews();
+    private void setupRoleRouting() {
+        findViewById(R.id.cardSelectCustomer).setOnClickListener(v -> {
+            layoutRoleSelection.setVisibility(View.GONE);
+            layoutCustomerDashboard.setVisibility(View.VISIBLE);
+            layoutWorkerDashboard.setVisibility(View.GONE);
+            tvRoleSubtitle.setText("സേവനം ആവശ്യക്കാർക്ക് (Customer Portal)");
+            renderCustomerWorkerList(spinnerFilterJob.getSelectedItem().toString());
+        });
 
-        for (Worker worker : listToRender) {
+        findViewById(R.id.cardSelectWorker).setOnClickListener(v -> {
+            layoutRoleSelection.setVisibility(View.GONE);
+            layoutCustomerDashboard.setVisibility(View.GONE);
+            layoutWorkerDashboard.setVisibility(View.VISIBLE);
+            tvRoleSubtitle.setText("തൊഴിലാളി രജിസ്ട്രേഷൻ &amp; ഡാഷ്‌ബോർഡ്");
+        });
+
+        btnBackFromCustomer.setOnClickListener(v -> showRoleSelection());
+        btnBackFromWorker.setOnClickListener(v -> showRoleSelection());
+
+        btnRegisterWorker.setOnClickListener(v -> handleWorkerRegistration());
+    }
+
+    private void showRoleSelection() {
+        layoutRoleSelection.setVisibility(View.VISIBLE);
+        layoutCustomerDashboard.setVisibility(View.GONE);
+        layoutWorkerDashboard.setVisibility(View.GONE);
+        tvRoleSubtitle.setText("കോട്ടായി ഗ്രാമപഞ്ചായത്ത് സർവീസ് നെറ്റ്‌വർക്ക്");
+    }
+
+    private void handleWorkerRegistration() {
+        String name = etName.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
+        String area = etArea.getText().toString().trim();
+        String wageStr = etWage.getText().toString().trim();
+        String upi = etUpiId.getText().toString().trim();
+        String selectedJob = spinnerWorkerJob.getSelectedItem().toString();
+
+        if (name.isEmpty() || phone.isEmpty() || area.isEmpty() || wageStr.isEmpty()) {
+            Toast.makeText(this, "ദയവായി പ്രധാന വിവരങ്ങൾ പൂരിപ്പിക്കുക", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int wage = Integer.parseInt(wageStr);
+        registeredWorkers.add(0, new WorkerProfile(name, phone, selectedJob, area, wage, upi));
+
+        etName.setText("");
+        etPhone.setText("");
+        etArea.setText("");
+        etWage.setText("");
+        etUpiId.setText("");
+
+        Toast.makeText(this, "നിങ്ങളുടെ വിവരങ്ങൾ വിജയകരമായി ചേർത്തു!", Toast.LENGTH_LONG).show();
+        showRoleSelection();
+    }
+
+    private void renderCustomerWorkerList(String filter) {
+        containerCustomerWorkers.removeAllViews();
+
+        List<WorkerProfile> matched = new ArrayList<>();
+        for (WorkerProfile w : registeredWorkers) {
+            if (filter.equals(allJobs[0]) || w.job.equalsIgnoreCase(filter)) {
+                matched.add(w);
+            }
+        }
+
+        if (matched.isEmpty()) {
+            TextView tvEmpty = new TextView(this);
+            tvEmpty.setText("ഈ വിഭാഗത്തിൽ നിലവിൽ രജിസ്റ്റർ ചെയ്ത തൊഴിലാളികൾ ആരും ഇല്ല. തൊഴിലാളികൾ സ്വയം രജിസ്റ്റർ ചെയ്യുമ്പോൾ ഇവിടെ കാണാം.");
+            tvEmpty.setTextColor(Color.GRAY);
+            tvEmpty.setPadding(10, 40, 10, 10);
+            tvEmpty.setTextSize(14f);
+            containerCustomerWorkers.addView(tvEmpty);
+            return;
+        }
+
+        for (WorkerProfile worker : matched) {
             CardView card = new CardView(this);
-            card.setRadius(18f);
+            card.setRadius(16f);
             card.setCardElevation(4f);
             card.setUseCompatPadding(true);
 
-            LinearLayout itemLayout = new LinearLayout(this);
-            itemLayout.setOrientation(LinearLayout.VERTICAL);
-            itemLayout.setPadding(24, 20, 24, 20);
+            LinearLayout layout = new LinearLayout(this);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.setPadding(24, 20, 24, 20);
 
             TextView tvName = new TextView(this);
-            tvName.setText(worker.name);
+            tvName.setText(worker.name + " (" + worker.area + ")");
             tvName.setTextSize(16f);
             tvName.setTextColor(Color.parseColor("#1B5E20"));
             tvName.setTypeface(null, android.graphics.Typeface.BOLD);
 
-            TextView tvSkill = new TextView(this);
-            tvSkill.setText("തൊഴിൽ: " + worker.skill);
-            tvSkill.setTextSize(13f);
-            tvSkill.setTextColor(Color.DKGRAY);
+            TextView tvJob = new TextView(this);
+            tvJob.setText("തൊഴിൽ: " + worker.job);
+            tvJob.setTextSize(13f);
+            tvJob.setTextColor(Color.DKGRAY);
 
             TextView tvWage = new TextView(this);
-            tvWage.setText("കൂലി: ₹ " + worker.dailyWage + " / ദിവസം");
+            tvWage.setText("കൂലി നിരക്ക്: ₹ " + worker.wage);
             tvWage.setTextSize(14f);
-            tvWage.setTextColor(Color.parseColor("#E65100"));
+            tvWage.setTextColor(Color.parseColor("#D84315"));
             tvWage.setTypeface(null, android.graphics.Typeface.BOLD);
 
-            LinearLayout actionRow = new LinearLayout(this);
-            actionRow.setOrientation(LinearLayout.HORIZONTAL);
-            actionRow.setWeightSum(2);
-            actionRow.setPadding(0, 14, 0, 0);
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setWeightSum(2);
+            row.setPadding(0, 14, 0, 0);
 
             Button btnCall = new Button(this);
             btnCall.setText("വിളിക്കുക 📞");
@@ -127,100 +248,54 @@ public class MainActivity extends AppCompatActivity {
 
             Button btnPay = new Button(this);
             btnPay.setText("കൂലി നൽകുക (UPI) ₹");
-            btnPay.setBackgroundColor(Color.parseColor("#F57C00"));
+            btnPay.setBackgroundColor(Color.parseColor("#E65100"));
             btnPay.setTextColor(Color.WHITE);
             LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             btnPay.setLayoutParams(p2);
-            btnPay.setOnClickListener(v -> initiateUpiPayment(worker.name, worker.dailyWage));
+            btnPay.setOnClickListener(v -> {
+                String targetUpi = worker.upiId.isEmpty() ? "kottayiworker@upi" : worker.upiId;
+                Uri uri = Uri.parse("upi://pay").buildUpon()
+                        .appendQueryParameter("pa", targetUpi)
+                        .appendQueryParameter("pn", worker.name)
+                        .appendQueryParameter("tn", "Kottayi Coolie Service")
+                        .appendQueryParameter("am", String.valueOf(worker.wage))
+                        .appendQueryParameter("cu", "INR")
+                        .build();
+                Intent upiIntent = new Intent(Intent.ACTION_VIEW, uri);
+                try {
+                    startActivity(Intent.createChooser(upiIntent, "Pay via UPI"));
+                } catch (Exception e) {
+                    Toast.makeText(this, "UPI ആപ്പുകൾ ലഭ്യമല്ല", Toast.LENGTH_SHORT).show();
+                }
+            });
 
-            actionRow.addView(btnCall);
-            actionRow.addView(btnPay);
+            row.addView(btnCall);
+            row.addView(btnPay);
 
-            itemLayout.addView(tvName);
-            itemLayout.addView(tvSkill);
-            itemLayout.addView(tvWage);
-            itemLayout.addView(actionRow);
+            layout.addView(tvName);
+            layout.addView(tvJob);
+            layout.addView(tvWage);
+            layout.addView(row);
 
-            card.addView(itemLayout);
-            workerListContainer.addView(card);
+            card.addView(layout);
+            containerCustomerWorkers.addView(card);
         }
     }
 
-    private void initiateUpiPayment(String name, int amount) {
-        Uri uri = Uri.parse("upi://pay").buildUpon()
-                .appendQueryParameter("pa", "kottayiworker@upi")
-                .appendQueryParameter("pn", name)
-                .appendQueryParameter("tn", "Kottayi Coolie Payment")
-                .appendQueryParameter("am", String.valueOf(amount))
-                .appendQueryParameter("cu", "INR")
-                .build();
-
-        Intent upiIntent = new Intent(Intent.ACTION_VIEW, uri);
-        Intent chooser = Intent.createChooser(upiIntent, "Pay with UPI (GPay / PhonePe / Paytm)");
-        try {
-            startActivity(chooser);
-        } catch (Exception e) {
-            Toast.makeText(this, "ഫോണിൽ UPI ആപ്പുകൾ കണ്ടെത്തിയില്ല", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void setupListeners() {
-        btnAddWorker.setOnClickListener(v -> {
-            String name = etWorkerName.getText().toString().trim();
-            String phone = etWorkerPhone.getText().toString().trim();
-            String skill = etWorkerSkill.getText().toString().trim();
-            String wageStr = etWorkerWage.getText().toString().trim();
-
-            if (name.isEmpty() || phone.isEmpty() || skill.isEmpty() || wageStr.isEmpty()) {
-                Toast.makeText(this, "ദയവായി എല്ലാ വിവരങ്ങളും പൂരിപ്പിക്കുക", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            int wage = Integer.parseInt(wageStr);
-            workers.add(0, new Worker(name, skill, phone, wage));
-            renderWorkerCards(workers);
-
-            etWorkerName.setText("");
-            etWorkerPhone.setText("");
-            etWorkerSkill.setText("");
-            etWorkerWage.setText("");
-
-            Toast.makeText(this, "തൊഴിലാളിയെ വിജയകരമായി ചേർത്തു!", Toast.LENGTH_LONG).show();
-        });
-
-        findViewById(R.id.btnCategoryClimber).setOnClickListener(v -> filterWorkers("തെങ്ങ്"));
-        findViewById(R.id.btnCategoryDriver).setOnClickListener(v -> filterWorkers("ഡ്രൈവർ"));
-        findViewById(R.id.btnCategoryElectrician).setOnClickListener(v -> filterWorkers("ഇലക്ട്രീഷ്യൻ"));
-    }
-
-    private void filterWorkers(String query) {
-        List<Worker> filtered = new ArrayList<>();
-        for (Worker w : workers) {
-            if (w.skill.contains(query)) {
-                filtered.add(w);
-            }
-        }
-        renderWorkerCards(filtered.isEmpty() ? workers : filtered);
-    }
-
-    private void playKeralaTraditionalTone() {
+    private void playKeralaTone() {
         new Thread(() -> {
             try {
                 int sampleRate = 44100;
-                int durationMs = 1500;
+                int durationMs = 1400;
                 int count = (sampleRate * durationMs) / 1000;
                 short[] samples = new short[count];
 
                 for (int i = 0; i < count; i++) {
                     double progress = (double) i / count;
-                    double baseFreq = 140.0;
-                    double rhythmicBounce = Math.sin(2.0 * Math.PI * 6.0 * progress);
-                    double freq = baseFreq + (rhythmicBounce * 30.0);
-
+                    double freq = 145.0 + (Math.sin(2.0 * Math.PI * 6.0 * progress) * 28.0);
                     double angle = 2.0 * Math.PI * i / (sampleRate / freq);
-                    double harmonic = 0.4 * Math.sin(angle * 2.0);
+                    double harmonic = 0.35 * Math.sin(angle * 2.0);
                     double envelope = Math.sin(Math.PI * progress);
-
                     samples[i] = (short) ((Math.sin(angle) + harmonic) * envelope * 24000);
                 }
 
@@ -244,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void handleSplashDismiss() {
+    private void dismissSplash() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (splashOverlay != null) {
                 splashOverlay.animate()
@@ -253,6 +328,6 @@ public class MainActivity extends AppCompatActivity {
                         .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
                         .start();
             }
-        }, 1800);
+        }, 1600);
     }
 }
