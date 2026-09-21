@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Circle Background - Rich Kerala Green -->
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M54,4 A50,50 0 1,0 54,104 A50,50 0 1,0 54,4" />
+
+    <!-- Inner Golden Ring -->
+    <path
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2"
+        android:pathData="M54,10 A44,44 0 1,0 54,98 A44,44 0 1,0 54,10" />
+
+    <!-- Coconut Tree Trunk -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M51,85 L53,48 Q54,44 56,48 L57,85 Z" />
+
+    <!-- Coconut Tree Leaves (Stylized Green Foliage) -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M54,46 Q40,35 30,42 Q42,46 52,48 Z" />
+    <path
+        android:fillColor="#388E3C"
+        android:pathData="M54,46 Q68,35 78,42 Q66,46 56,48 Z" />
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M54,44 Q54,26 42,28 Q48,38 52,45 Z" />
+    <path
+        android:fillColor="#43A047"
+        android:pathData="M54,44 Q54,26 66,28 Q60,38 56,45 Z" />
+
+    <!-- Traditional Kerala Bell / Lamp Symbol Base -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M44,83 H64 V86 H44 Z" />
+</vector>
