@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             "✨ മറ്റു തൊഴിലുകൾ (Other Works)"
     };
 
-    // Rain drop animation particles
     private static class RainDrop {
         float x, y, length, speed;
     }
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
         playKeralaTone();
         dismissSplashWithAnimation();
 
-        // Check Live Weather for Kottayi, Palakkad
         fetchKottayiWeather();
     }
 
@@ -316,11 +314,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Dynamic Weather Logic for Kottayi (Palakkad)
     private void fetchKottayiWeather() {
         new Thread(() -> {
             try {
-                // Kottayi Coordinates: Lat 10.7511, Long 76.5292
                 String apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=10.7511&longitude=76.5292&current_weather=true";
                 URL url = new URL(apiUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -343,34 +339,26 @@ public class MainActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> applyWeatherTheme(weatherCode, temp));
             } catch (Exception e) {
-                runOnUiThread(() -> {
-                    tvWeatherBadge.setText("🌴 കോട്ടായി");
-                });
+                runOnUiThread(() -> tvWeatherBadge.setText("🌴 കോട്ടായി"));
             }
         }).start();
     }
 
     private void applyWeatherTheme(int code, double temp) {
-        // WMO weather code interpretation:
-        // 51-67, 80-82: Rain/Showers | 0-1: Sunny/Clear | 2-3, 45-48: Clouds/Fog
         if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) {
-            // Rainy Theme (Dark Monsoon Blue / Rain overlay)
             layoutHeader.setBackgroundColor(Color.parseColor("#263238"));
             tvWeatherBadge.setText("🌧️ മഴ (" + (int)temp + "°C)");
             tvHeaderSubtitle.setText("കോട്ടായിയിൽ മഴ പെയ്യുന്നു • പണികൾ ഇവിടെ കാണാം");
             startRainAnimation();
         } else if (temp >= 32.0 || code == 0) {
-            // Sunny / Warm Day Theme (Deep Amber/Warm)
             layoutHeader.setBackgroundColor(Color.parseColor("#E65100"));
             tvWeatherBadge.setText("☀️ വെയിൽ (" + (int)temp + "°C)");
             tvHeaderSubtitle.setText("കോട്ടായിയിൽ നല്ല തെളിഞ്ഞ കാലാവസ്ഥ ☀️");
         } else if (temp <= 24.0) {
-            // Cold / Pleasant Breeze Theme (Deep Teal)
             layoutHeader.setBackgroundColor(Color.parseColor("#004D40"));
             tvWeatherBadge.setText("❄️ തണുപ്പ് (" + (int)temp + "°C)");
             tvHeaderSubtitle.setText("കോട്ടായിയിൽ തണുത്ത സുഖകരമായ കാറ്റ് 🍃");
         } else {
-            // Pleasant / Cloudy Kerala Green
             layoutHeader.setBackgroundColor(Color.parseColor("#1B5E20"));
             tvWeatherBadge.setText("⛅ മേഘാവൃതം (" + (int)temp + "°C)");
             tvHeaderSubtitle.setText("കോട്ടായി പഞ്ചായത്ത് കൂലിപ്പണി & സർവീസ് നെറ്റ്‌വർക്ക്");
@@ -407,7 +395,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        // Custom rain rendering inside the view
         weatherEffectView.setBackground(new android.graphics.drawable.Drawable() {
             @Override
             public void draw(Canvas canvas) {
@@ -464,8 +451,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception ignored) {}
         }).start();
     }
-
-    private void dismissSplashWithAnimation() {
+    
+     private void dismissSplashWithAnimation() {
         if (tvDeveloperCredit != null) {
             tvDeveloperCredit.setAlpha(0f);
             tvDeveloperCredit.setScaleX(0.7f);
@@ -474,4 +461,35 @@ public class MainActivity extends AppCompatActivity {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 tvDeveloperCredit.animate()
                         .alpha(1.0f)
-                      
+                        .scaleX(1.05f)
+                        .scaleY(1.05f)
+                        .setDuration(700)
+                        .withEndAction(() -> {
+                            tvDeveloperCredit.animate()
+                                    .scaleX(1.0f)
+                                    .scaleY(1.0f)
+                                    .setDuration(250)
+                                    .start();
+                        })
+                        .start();
+            }, 500);
+        }
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (splashOverlay != null) {
+                splashOverlay.animate()
+                        .alpha(0.0f)
+                        .setDuration(600)
+                        .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
+                        .start();
+            }
+        }, 2600);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isRaining = false;
+        animationHandler.removeCallbacksAndMessages(null);
+    }
+}   
