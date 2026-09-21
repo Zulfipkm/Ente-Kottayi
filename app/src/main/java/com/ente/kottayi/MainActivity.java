@@ -1,7 +1,9 @@
 package com.ente.kottayi;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
@@ -21,14 +23,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private View splashOverlay, viewSearch, viewRegister;
-    private LinearLayout containerWorkersList;
-    private TextView tvHeaderSubtitle, tvDeveloperCredit;
+    private View splashOverlay, viewSearch, viewRegister, weatherEffectView;
+    private LinearLayout containerWorkersList, layoutHeader;
+    private TextView tvHeaderSubtitle, tvDeveloperCredit, tvWeatherBadge;
     private Button navSearch, navRegister, btnSaveProfile;
     private Spinner spinnerFilterJob, spinnerWorkerJob;
     private EditText etName, etPhone, etArea, etWage, etUpiId, etCustomJob;
@@ -69,6 +77,15 @@ public class MainActivity extends AppCompatActivity {
             "✨ മറ്റു തൊഴിലുകൾ (Other Works)"
     };
 
+    // Rain drop animation particles
+    private static class RainDrop {
+        float x, y, length, speed;
+    }
+    private List<RainDrop> rainDrops = new ArrayList<>();
+    private Paint rainPaint = new Paint();
+    private boolean isRaining = false;
+    private Handler animationHandler = new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,15 +96,22 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         playKeralaTone();
         dismissSplashWithAnimation();
+
+        // Check Live Weather for Kottayi, Palakkad
+        fetchKottayiWeather();
     }
 
     private void initViews() {
         splashOverlay = findViewById(R.id.splashOverlay);
         viewSearch = findViewById(R.id.viewSearch);
         viewRegister = findViewById(R.id.viewRegister);
+        weatherEffectView = findViewById(R.id.weatherEffectView);
         containerWorkersList = findViewById(R.id.containerWorkersList);
+        layoutHeader = findViewById(R.id.layoutHeader);
+
         tvHeaderSubtitle = findViewById(R.id.tvHeaderSubtitle);
         tvDeveloperCredit = findViewById(R.id.tvDeveloperCredit);
+        tvWeatherBadge = findViewById(R.id.tvWeatherBadge);
 
         navSearch = findViewById(R.id.navSearch);
         navRegister = findViewById(R.id.navRegister);
@@ -102,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
         etWage = findViewById(R.id.etWage);
         etUpiId = findViewById(R.id.etUpiId);
         etCustomJob = findViewById(R.id.etCustomJob);
+
+        rainPaint.setColor(Color.parseColor("#80B0BEC5"));
+        rainPaint.setStrokeWidth(3f);
     }
 
     private void setupJobDropdowns() {
@@ -146,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
             viewRegister.setVisibility(View.GONE);
             navSearch.setTextColor(Color.parseColor("#1B5E20"));
             navRegister.setTextColor(Color.parseColor("#757575"));
-            tvHeaderSubtitle.setText("കോട്ടായിയിലെ തൊഴിലാളികളെ തിരയുക");
             renderWorkerCards(spinnerFilterJob.getSelectedItem().toString());
         });
 
@@ -155,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             viewRegister.setVisibility(View.VISIBLE);
             navRegister.setTextColor(Color.parseColor("#1B5E20"));
             navSearch.setTextColor(Color.parseColor("#757575"));
-            tvHeaderSubtitle.setText("നിങ്ങളുടെ തൊഴിലും കൂലിയും ചേർക്കൂ");
         });
     }
 
@@ -291,6 +316,118 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Dynamic Weather Logic for Kottayi (Palakkad)
+    private void fetchKottayiWeather() {
+        new Thread(() -> {
+            try {
+                // Kottayi Coordinates: Lat 10.7511, Long 76.5292
+                String apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=10.7511&longitude=76.5292&current_weather=true";
+                URL url = new URL(apiUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(4000);
+                conn.setReadTimeout(4000);
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                JSONObject json = new JSONObject(response.toString());
+                JSONObject current = json.getJSONObject("current_weather");
+                int weatherCode = current.getInt("weathercode");
+                double temp = current.getDouble("temperature");
+
+                runOnUiThread(() -> applyWeatherTheme(weatherCode, temp));
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    tvWeatherBadge.setText("🌴 കോട്ടായി");
+                });
+            }
+        }).start();
+    }
+
+    private void applyWeatherTheme(int code, double temp) {
+        // WMO weather code interpretation:
+        // 51-67, 80-82: Rain/Showers | 0-1: Sunny/Clear | 2-3, 45-48: Clouds/Fog
+        if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) {
+            // Rainy Theme (Dark Monsoon Blue / Rain overlay)
+            layoutHeader.setBackgroundColor(Color.parseColor("#263238"));
+            tvWeatherBadge.setText("🌧️ മഴ (" + (int)temp + "°C)");
+            tvHeaderSubtitle.setText("കോട്ടായിയിൽ മഴ പെയ്യുന്നു • പണികൾ ഇവിടെ കാണാം");
+            startRainAnimation();
+        } else if (temp >= 32.0 || code == 0) {
+            // Sunny / Warm Day Theme (Deep Amber/Warm)
+            layoutHeader.setBackgroundColor(Color.parseColor("#E65100"));
+            tvWeatherBadge.setText("☀️ വെയിൽ (" + (int)temp + "°C)");
+            tvHeaderSubtitle.setText("കോട്ടായിയിൽ നല്ല തെളിഞ്ഞ കാലാവസ്ഥ ☀️");
+        } else if (temp <= 24.0) {
+            // Cold / Pleasant Breeze Theme (Deep Teal)
+            layoutHeader.setBackgroundColor(Color.parseColor("#004D40"));
+            tvWeatherBadge.setText("❄️ തണുപ്പ് (" + (int)temp + "°C)");
+            tvHeaderSubtitle.setText("കോട്ടായിയിൽ തണുത്ത സുഖകരമായ കാറ്റ് 🍃");
+        } else {
+            // Pleasant / Cloudy Kerala Green
+            layoutHeader.setBackgroundColor(Color.parseColor("#1B5E20"));
+            tvWeatherBadge.setText("⛅ മേഘാവൃതം (" + (int)temp + "°C)");
+            tvHeaderSubtitle.setText("കോട്ടായി പഞ്ചായത്ത് കൂലിപ്പണി & സർവീസ് നെറ്റ്‌വർക്ക്");
+        }
+    }
+
+    private void startRainAnimation() {
+        if (isRaining) return;
+        isRaining = true;
+
+        Random random = new Random();
+        rainDrops.clear();
+        for (int i = 0; i < 45; i++) {
+            RainDrop drop = new RainDrop();
+            drop.x = random.nextInt(1080);
+            drop.y = random.nextInt(1920);
+            drop.length = 25 + random.nextInt(20);
+            drop.speed = 15 + random.nextInt(12);
+            rainDrops.add(drop);
+        }
+
+        Runnable rainTicker = new Runnable() {
+            @Override
+            public void run() {
+                if (!isRaining) return;
+                for (RainDrop drop : rainDrops) {
+                    drop.y += drop.speed;
+                    if (drop.y > weatherEffectView.getHeight() && weatherEffectView.getHeight() > 0) {
+                        drop.y = -drop.length;
+                    }
+                }
+                weatherEffectView.invalidate();
+                animationHandler.postDelayed(this, 30);
+            }
+        };
+
+        // Custom rain rendering inside the view
+        weatherEffectView.setBackground(new android.graphics.drawable.Drawable() {
+            @Override
+            public void draw(Canvas canvas) {
+                if (isRaining) {
+                    for (RainDrop drop : rainDrops) {
+                        canvas.drawLine(drop.x, drop.y, drop.x - 4, drop.y + drop.length, rainPaint);
+                    }
+                }
+            }
+            @Override
+            public void setAlpha(int alpha) {}
+            @Override
+            public void setColorFilter(android.graphics.ColorFilter colorFilter) {}
+            @Override
+            public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
+        });
+
+        animationHandler.post(rainTicker);
+    }
+
     private void playKeralaTone() {
         new Thread(() -> {
             try {
@@ -334,32 +471,7 @@ public class MainActivity extends AppCompatActivity {
             tvDeveloperCredit.setScaleX(0.7f);
             tvDeveloperCredit.setScaleY(0.7f);
 
-            // Premium cinematic scale & glow entrance for "Sulfi Sulaiman"
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 tvDeveloperCredit.animate()
                         .alpha(1.0f)
-                        .scaleX(1.05f)
-                        .scaleY(1.05f)
-                        .setDuration(700)
-                        .withEndAction(() -> {
-                            tvDeveloperCredit.animate()
-                                    .scaleX(1.0f)
-                                    .scaleY(1.0f)
-                                    .setDuration(250)
-                                    .start();
-                        })
-                        .start();
-            }, 500);
-        }
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (splashOverlay != null) {
-                splashOverlay.animate()
-                        .alpha(0.0f)
-                        .setDuration(600)
-                        .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
-                        .start();
-            }
-        }, 2600);
-    }
-}
+                      
