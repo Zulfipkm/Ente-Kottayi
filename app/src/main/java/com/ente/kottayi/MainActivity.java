@@ -482,4 +482,121 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams p1 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             p1.rightMargin = 6;
             btnCall.setLayoutParams(p1);
-            btnCall.setOnClickListener
+            btnCall.setOnClickListener(v -> {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + worker.phone));
+                startActivity(callIntent);
+            });
+
+            Button btnPay = new Button(this);
+            btnPay.setText("കൂലി നൽകുക (UPI) ₹");
+            btnPay.setBackgroundColor(Color.parseColor("#EF6C00"));
+            btnPay.setTextColor(Color.WHITE);
+            LinearLayout.LayoutParams p2 = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+            btnPay.setLayoutParams(p2);
+            btnPay.setOnClickListener(v -> {
+                String targetUpi = worker.upiId.isEmpty() ? "kottayiworker@upi" : worker.upiId;
+                Uri upiUri = Uri.parse("upi://pay").buildUpon()
+                        .appendQueryParameter("pa", targetUpi)
+                        .appendQueryParameter("pn", worker.name)
+                        .appendQueryParameter("tn", "Kottayi Coolie Service")
+                        .appendQueryParameter("am", String.valueOf(worker.wage))
+                        .appendQueryParameter("cu", "INR")
+                        .build();
+                try {
+                    startActivity(Intent.createChooser(new Intent(Intent.ACTION_VIEW, upiUri), "UPI വഴി കൂലി നൽകുക"));
+                } catch (Exception e) {
+                    Toast.makeText(this, "ഫോണിൽ UPI ആപ്പുകൾ കണ്ടെത്തിയില്ല", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            btnRow.addView(btnCall);
+            btnRow.addView(btnPay);
+
+            layout.addView(tvName);
+            layout.addView(tvJob);
+            layout.addView(tvWage);
+            layout.addView(btnRow);
+
+            card.addView(layout);
+            containerWorkersList.addView(card);
+        }
+    }
+
+    private void playKeralaTone() {
+        new Thread(() -> {
+            try {
+                int sampleRate = 44100;
+                int durationMs = 1400;
+                int count = (sampleRate * durationMs) / 1000;
+                short[] samples = new short[count];
+
+                for (int i = 0; i < count; i++) {
+                    double progress = (double) i / count;
+                    double freq = 145.0 + (Math.sin(2.0 * Math.PI * 6.0 * progress) * 28.0);
+                    double angle = 2.0 * Math.PI * i / (sampleRate / freq);
+                    double harmonic = 0.35 * Math.sin(angle * 2.0);
+                    double envelope = Math.sin(Math.PI * progress);
+                    samples[i] = (short) ((Math.sin(angle) + harmonic) * envelope * 24000);
+                }
+
+                AudioTrack track = new AudioTrack.Builder()
+                        .setAudioAttributes(new AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .build())
+                        .setAudioFormat(new AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(sampleRate)
+                                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                                .build())
+                        .setBufferSizeInBytes(samples.length * 2)
+                        .setTransferMode(AudioTrack.MODE_STATIC)
+                        .build();
+
+                track.write(samples, 0, samples.length);
+                track.play();
+            } catch (Exception ignored) {}
+        }).start();
+    }
+
+    private void dismissSplashWithAnimation() {
+        if (tvDeveloperCredit != null) {
+            tvDeveloperCredit.setAlpha(0f);
+            tvDeveloperCredit.setScaleX(0.7f);
+            tvDeveloperCredit.setScaleY(0.7f);
+
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                tvDeveloperCredit.animate()
+                        .alpha(1.0f)
+                        .scaleX(1.05f)
+                        .scaleY(1.05f)
+                        .setDuration(700)
+                        .withEndAction(() -> {
+                            tvDeveloperCredit.animate()
+                                    .scaleX(1.0f)
+                                    .scaleY(1.0f)
+                                    .setDuration(250)
+                                    .start();
+                        })
+                        .start();
+            }, 500);
+        }
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (splashOverlay != null) {
+                splashOverlay.animate()
+                        .alpha(0.0f)
+                        .setDuration(600)
+                        .withEndAction(() -> splashOverlay.setVisibility(View.GONE))
+                        .start();
+            }
+        }, 2600);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isAnimating = false;
+        animationHandler.removeCallbacksAndMessages(null);
+    }
+}
